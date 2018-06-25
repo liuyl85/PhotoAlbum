@@ -1,5 +1,6 @@
 package com.yun.album.service;
 
+import com.yun.album.bean.PageInfo;
 import com.yun.album.bean.User;
 
 /**
@@ -28,5 +29,11 @@ public interface IUserService {
      * @return 新令牌
      */
     String refreshToken(String oldToken);
+
+    /**
+     * 用户列表
+     * @return 分页结果
+     */
+    PageInfo<User> getUserList(int pageNum, int pageSize);
 
 }

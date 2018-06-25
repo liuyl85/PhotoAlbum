@@ -19,7 +19,7 @@ import java.io.IOException;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Resource
     private JwtTokenUtil jwtTokenUtil;
-    @Resource
+    @Resource(name = "JwtUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Override

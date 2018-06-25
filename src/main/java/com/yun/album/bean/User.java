@@ -8,8 +8,16 @@ public class User {
     private String pwd;
     private List<String> roles;
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setAcc(String acc) {
+        this.acc = acc;
     }
 
     public String getAcc() {

@@ -1,6 +1,7 @@
 package com.yun.album.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,8 +24,6 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
-    private UserDetailsService userDetailsService;
-    @Resource
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Resource
     private EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
@@ -32,18 +31,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public AuthenticationManager getAuthenticationManager() throws Exception {
         return authenticationManagerBean();
     }
 
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder, PasswordEncoder passwordEncoder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder);
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder, @Qualifier("JwtUserDetailsService") UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Override
