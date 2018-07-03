@@ -1,7 +1,7 @@
 package com.yun.album.control;
 
-import com.yun.album.bean.User;
 import com.yun.album.service.IUserService;
+import com.yun.album.vo.UserVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,8 +24,8 @@ public class UserControl {
     }
 
     @PostMapping(value = "/register")
-    public String register(User user) {
-        int res = userService.register(user);
+    public String register(UserVo vo) {
+        int res = userService.register(vo);
         return "result:" + res;
     }
 

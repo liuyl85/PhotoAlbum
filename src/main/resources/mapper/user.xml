@@ -5,6 +5,7 @@
         <id property="id" column="f_id" javaType="long" jdbcType="BIGINT" />
         <result property="acc" column="f_acc" javaType="String" jdbcType="VARCHAR"/>
         <result property="pwd" column="f_pwd" javaType="String" jdbcType="CHAR"/>
+        <result property="phone" column="f_phone" javaType="String" jdbcType="CHAR"/>
         <result property="name" column="f_name" javaType="String" jdbcType="VARCHAR"/>
         <result property="sex" column="f_sex" javaType="byte" jdbcType="TINYINT"/>
         <result property="createTime" column="f_create_time" javaType="java.time.Instant" jdbcType="TIMESTAMP"/>

@@ -1,0 +1,14 @@
+WITH recursive child_node (`f_id`, `f_parent_id`) AS
+(
+	SELECT `f_id`,
+	`f_parent_id`
+	FROM `t_manager`
+	WHERE `f_parent_id` = 1
+	UNION ALL
+	SELECT p.`f_id`,
+	p.`f_parent_id`
+	FROM `t_manager` p
+	INNER JOIN child_node
+	ON p.`f_parent_id` = child_node.`f_id`
+)
+SELECT * FROM child_node;

@@ -1,6 +1,7 @@
 package com.yun.album.dao;
 
 import com.yun.album.bean.User;
+import com.yun.album.dao.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,5 +12,5 @@ public interface IUserDao {
 
     User selectByAcc(String acc);
 
-    void insert(User user);
+    void insert(UserEntity user);
 }
