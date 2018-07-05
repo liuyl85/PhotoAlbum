@@ -1,6 +1,6 @@
 package com.yun.album.service;
 
-import com.yun.album.vo.UserVo;
+import com.yun.album.vo.UserRegisterVo;
 
 /**
  * 用户操作接口
@@ -12,15 +12,15 @@ public interface IUserService {
      * @param vo 用户信息
      * @return 操作结果
      */
-    int register(UserVo vo);
+    int register(UserRegisterVo vo);
 
     /**
      * 用户登录
      * @param username 用户名
      * @param password 密码
-     * @return 令牌
+     * @return (int:错误码 String:令牌)
      */
-    String login(String username, String password);
+    Object login(String username, String password);
 
     /**
      * 刷新令牌
@@ -28,5 +28,6 @@ public interface IUserService {
      * @return 新令牌
      */
     String refreshToken(String oldToken);
+
 
 }

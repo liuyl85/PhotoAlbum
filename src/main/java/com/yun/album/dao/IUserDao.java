@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface IUserDao {
 
-    User selectByAcc(String acc);
+    User selectByAcc(String acc) throws Exception;
 
-    void insert(UserEntity user);
+    void insert(UserEntity user) throws Exception;
 }

@@ -8,7 +8,7 @@ import com.yun.album.security.JwtTokenUtil;
 import com.yun.album.service.IUserService;
 import com.yun.album.util.IdFactory;
 import com.yun.album.util.Tools;
-import com.yun.album.vo.UserVo;
+import com.yun.album.vo.UserRegisterVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements IUserService {
     private IUserDao userDao;
 
     @Override
-    public int register(UserVo vo) {
+    public int register(UserRegisterVo vo) {
         Long newId = IdFactory.instance.createNewId();
         if(newId == null){
             return StatusCode.CREATE_ID_ERROR;
@@ -64,12 +64,18 @@ public class UserServiceImpl implements IUserService {
             return StatusCode.MD5_DIGEST_FAILED;
         }
 
-        userDao.insert(user);
-        return StatusCode.SUCCESS;
+        try {
+            userDao.insert(user);
+            return StatusCode.SUCCESS;
+        } catch (Exception e) {
+            logger.error("insert user error.", e);
+            return StatusCode.ERROR;
+        }
+
     }
 
     @Override
-    public String login(String username, String password) {
+    public Object login(String username, String password) {
         StringBuilder temp = new StringBuilder();
         temp.append(username).append(" ");
         temp.append(password).append(" ");
@@ -78,7 +84,7 @@ public class UserServiceImpl implements IUserService {
             password = Tools.md5Digest(temp.toString());
         } catch (MD5DigestException e) {
             logger.error("password md5 digest error.", e);
-            return String.valueOf(StatusCode.MD5_DIGEST_FAILED);
+            return StatusCode.MD5_DIGEST_FAILED;
         }
 
         try {
@@ -88,7 +94,7 @@ public class UserServiceImpl implements IUserService {
             return jwtTokenUtil.generateToken((UserDetails)authentication.getPrincipal());
         } catch (BadCredentialsException e) {
             logger.error("account or password error.", e);
-            return String.valueOf(StatusCode.ACC_OR_PWD_ERROR);
+            return StatusCode.ACC_OR_PWD_ERROR;
         }
     }
 

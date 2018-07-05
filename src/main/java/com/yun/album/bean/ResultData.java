@@ -1,7 +1,7 @@
 package com.yun.album.bean;
 
 /**
- * 结果集
+ * 请求操作结果
  */
 public class ResultData {
 	/** 状态 */
@@ -18,6 +18,11 @@ public class ResultData {
 	public ResultData(int status, String msg) {
 		this.status = status;
 		this.msg = msg;
+	}
+
+	public ResultData(int status, Object data) {
+		this.status = status;
+		this.data = data;
 	}
 	
 	public ResultData(int status, String msg, Object data) {

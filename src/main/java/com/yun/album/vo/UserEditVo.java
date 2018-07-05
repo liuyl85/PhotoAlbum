@@ -3,7 +3,7 @@ package com.yun.album.vo;
 /**
  * 用户
  */
-public class UserVo {
+public class UserEditVo {
     /** 帐号 */
     private String acc;
     /** 密码 */
