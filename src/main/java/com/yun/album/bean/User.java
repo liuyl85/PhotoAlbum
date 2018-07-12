@@ -16,6 +16,8 @@ public class User {
     private String name;
     /** 性别 */
     private byte sex;
+    /** 令牌 */
+    private String token;
 
     public long getId() {
         return id;
@@ -41,4 +43,7 @@ public class User {
         return sex;
     }
 
+    public String getToken() {
+        return token;
+    }
 }

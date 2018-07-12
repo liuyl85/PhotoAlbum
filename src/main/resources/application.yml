@@ -30,6 +30,29 @@ spring:
     test-while-idle: true
     test-on-borrow: false
     test-on-return: false
+  redis:
+    host: localhost
+    password:
+    port: 6379
+    timeout: 3000ms
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 1
+        max-active: 8
+        max-wait: -1ms
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
+
+system:
+  config:
+    upload-file-path: D:/upload
+    photo-file-path: photo
+    other-file-path: other
+
+token:
+  secret: my_token
+  header-name: Authorization
+  prefix: bearer
+  valid-time-length: 86400000

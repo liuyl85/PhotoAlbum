@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
 /**
@@ -53,12 +54,11 @@ public class UserServiceImpl implements IUserService {
         user.setSex(vo.getSex());
         user.setCreateTime(LocalDateTime.now());
 
-        StringBuilder temp = new StringBuilder();
-        temp.append(user.getAcc()).append(" ");
-        temp.append(user.getPwd()).append(" ");
-        temp.append(user.getAcc());
         try {
-            user.setPwd(passwordEncoder.encode(Tools.md5Digest(temp.toString())));
+            String pwd = MessageFormat.format("{0}&{1}&{2}", user.getAcc(), user.getPwd(), user.getPhone());
+            pwd = Tools.md5Digest(pwd);
+            pwd = passwordEncoder.encode(pwd);
+            user.setPwd(pwd);
         } catch (MD5DigestException e) {
             logger.error("password md5 digest error.", e);
             return StatusCode.MD5_DIGEST_FAILED;

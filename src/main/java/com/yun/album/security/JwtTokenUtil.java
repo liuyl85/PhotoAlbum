@@ -3,6 +3,7 @@ package com.yun.album.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +13,10 @@ import java.util.Map;
 
 @Component
 public class JwtTokenUtil {
-    /** 密钥 */
-    private final String SECRET = "aQ43!yuG78&56JkloIpK0(_t%rDO";
+    @Value("${token.valid-time-length}")
+    private long validTimeLength;
+    @Value("${token.secret}")
+    private String secret;
 
     /**
      * 从数据声明生成令牌
@@ -21,8 +24,8 @@ public class JwtTokenUtil {
      * @return 令牌
      */
     private String generateToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + 2592000L * 1000);
-        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, SECRET).compact();
+        Date expirationDate = new Date(System.currentTimeMillis() + validTimeLength);
+        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
     /**
@@ -33,7 +36,7 @@ public class JwtTokenUtil {
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             claims = null;
         }
@@ -58,14 +61,13 @@ public class JwtTokenUtil {
      * @return 用户账号
      */
     public String getUserAccFromToken(String token) {
-        String userAcc;
         try {
             Claims claims = getClaimsFromToken(token);
-            userAcc = claims.getSubject();
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date()) ? null : claims.getSubject();
         } catch (Exception e) {
-            userAcc = null;
+            return null;
         }
-        return userAcc;
     }
 
     /**
@@ -98,18 +100,6 @@ public class JwtTokenUtil {
             refreshedToken = null;
         }
         return refreshedToken;
-    }
-
-    /**
-     * 验证令牌
-     * @param token       令牌
-     * @param userDetails 用户
-     * @return 是否有效
-     */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        JwtUser user = (JwtUser) userDetails;
-        String username = getUserAccFromToken(token);
-        return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
 }

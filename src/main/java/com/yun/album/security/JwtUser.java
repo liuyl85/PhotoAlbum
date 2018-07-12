@@ -8,17 +8,15 @@ import java.util.Collection;
 public class JwtUser implements UserDetails {
     private String acc;
     private String pwd;
-    private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUser(String acc, String pwd, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUser(String acc, String pwd) {
         this.acc = acc;
         this.pwd = pwd;
-        this.authorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
     }
 
     @Override
