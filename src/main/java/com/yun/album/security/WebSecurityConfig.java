@@ -47,20 +47,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // 禁用缓存
+        http.headers().cacheControl();
         http.headers().frameOptions().disable();
         // 由于使用的是JWT，我们这里不需要csrf
         http.csrf().disable();
         // 基于token，所以不需要session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+
+        String[] postUrl = new String[]{
+                "/album/login",
+                "/album/register",
+                "/album/reset_pwd"
+        };
+
+//        String[] getUrl = new String[]{
+//        };
+
         http.authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/user/**").permitAll()
+                .antMatchers(HttpMethod.POST, postUrl).permitAll()
+//                .antMatchers(HttpMethod.GET, getUrl).permitAll()
                 .anyRequest().authenticated()
                 .and();
-        // 禁用缓存
-        http.headers().cacheControl();
+
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling().authenticationEntryPoint(entryPointUnauthorizedHandler).accessDeniedHandler(restAccessDeniedHandler);
-
     }
 }

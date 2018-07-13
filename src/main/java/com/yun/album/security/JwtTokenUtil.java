@@ -19,6 +19,14 @@ public class JwtTokenUtil {
     private String secret;
 
     /**
+     * Token有效时间
+     * @return 有效时间(秒)
+     */
+    public long getValidTimeLength() {
+        return validTimeLength;
+    }
+
+    /**
      * 从数据声明生成令牌
      * @param claims 数据声明
      * @return 令牌

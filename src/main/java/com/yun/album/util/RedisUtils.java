@@ -40,20 +40,20 @@ public class RedisUtils {
     /**
      * 添加信息(字符串方式)
      * @param key 键
-     * @param obj 值
+     * @param value 值
      */
-    public void set(String key, Object obj){
-        valueOperations.set(key, obj);
+    public void set(String key, Object value){
+        valueOperations.set(key, value);
     }
 
     /**
      * 添加信息(字符串方式)
      * @param key 键
-     * @param obj 值
+     * @param value 值
      * @param expireTime 到期时间(秒)
      */
-    public void set(String key, Object obj, long expireTime){
-        valueOperations.set(key, obj, expireTime, TimeUnit.SECONDS);
+    public void set(String key, Object value, long expireTime){
+        valueOperations.set(key, value, expireTime, TimeUnit.SECONDS);
     }
 
     /**
@@ -77,15 +77,26 @@ public class RedisUtils {
      * 添加单个对象
      * @param key 键
      * @param filed 字段名
-     * @param domain 值
+     * @param value 值
      */
-    public void hset(String key, String filed, Object domain){
-        hashOperations.put(key, filed, domain);
+    public void hset(String key, String filed, Object value){
+        hashOperations.put(key, filed, value);
     }
 
-    public void hset(String key, String filed, Object domain, long expireTime){
-        hashOperations.put(key, filed, domain);
-        redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+    /**
+     * 添加单个对象
+     * @param key 键
+     * @param filed 字段名
+     * @param value 值
+     * @param expireTime 到期时间(秒)
+     */
+    public void hset(String key, String filed, Object value, long expireTime){
+        try {
+            hashOperations.put(key, filed, value);
+            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+        } finally {
+            deleteKey(key);
+        }
     }
 
 

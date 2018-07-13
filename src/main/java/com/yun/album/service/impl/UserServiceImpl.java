@@ -1,16 +1,20 @@
 package com.yun.album.service.impl;
 
+import com.yun.album.bean.User;
 import com.yun.album.common.StatusCode;
 import com.yun.album.dao.IUserDao;
 import com.yun.album.dao.entity.UserEntity;
 import com.yun.album.exception.MD5DigestException;
 import com.yun.album.security.JwtTokenUtil;
+import com.yun.album.security.JwtUser;
 import com.yun.album.service.IUserService;
 import com.yun.album.util.IdFactory;
+import com.yun.album.util.RedisUtils;
 import com.yun.album.util.Tools;
 import com.yun.album.vo.UserRegisterVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +34,8 @@ import java.time.LocalDateTime;
 @Service
 public class UserServiceImpl implements IUserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    @Value("${token.prefix}")
+    private String tokenPrefix;
     @Resource
     private AuthenticationManager authenticationManager;
     @Resource
@@ -38,6 +44,8 @@ public class UserServiceImpl implements IUserService {
     private PasswordEncoder passwordEncoder;
     @Resource
     private IUserDao userDao;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public int register(UserRegisterVo vo) {
@@ -50,12 +58,10 @@ public class UserServiceImpl implements IUserService {
         user.setId(newId);
         user.setAcc(vo.getAcc());
         user.setPhone(vo.getPhone());
-        user.setName(vo.getName());
-        user.setSex(vo.getSex());
         user.setCreateTime(LocalDateTime.now());
 
         try {
-            String pwd = MessageFormat.format("{0}&{1}&{2}", user.getAcc(), user.getPwd(), user.getPhone());
+            String pwd = MessageFormat.format("{0}&{1}&{2}", user.getAcc(), vo.getPwd(), user.getAcc());
             pwd = Tools.md5Digest(pwd);
             pwd = passwordEncoder.encode(pwd);
             user.setPwd(pwd);
@@ -64,24 +70,15 @@ public class UserServiceImpl implements IUserService {
             return StatusCode.MD5_DIGEST_FAILED;
         }
 
-        try {
-            userDao.insert(user);
-            return StatusCode.SUCCESS;
-        } catch (Exception e) {
-            logger.error("insert user error.", e);
-            return StatusCode.ERROR;
-        }
-
+        userDao.insert(user);
+        return StatusCode.SUCCESS;
     }
 
     @Override
     public Object login(String username, String password) {
-        StringBuilder temp = new StringBuilder();
-        temp.append(username).append(" ");
-        temp.append(password).append(" ");
-        temp.append(username);
         try {
-            password = Tools.md5Digest(temp.toString());
+            password = MessageFormat.format("{0}&{1}&{2}", username, password, username);
+            password = Tools.md5Digest(password);
         } catch (MD5DigestException e) {
             logger.error("password md5 digest error.", e);
             return StatusCode.MD5_DIGEST_FAILED;
@@ -91,7 +88,13 @@ public class UserServiceImpl implements IUserService {
             UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(username, password);
             Authentication authentication = authenticationManager.authenticate(upToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return jwtTokenUtil.generateToken((UserDetails)authentication.getPrincipal());
+            String token = jwtTokenUtil.generateToken((UserDetails)authentication.getPrincipal());
+
+            User user = ((JwtUser)authentication.getPrincipal()).getUser();
+            user.setToken(token);
+            redisUtils.set(user.getAcc(), user, jwtTokenUtil.getValidTimeLength());
+
+            return token;
         } catch (BadCredentialsException e) {
             logger.error("account or password error.", e);
             return StatusCode.ACC_OR_PWD_ERROR;
@@ -100,8 +103,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String refreshToken(String oldToken) {
-        String token = oldToken.substring("Bearer ".length());
-        return jwtTokenUtil.isTokenExpired(token) ? null : jwtTokenUtil.refreshToken(token);
+        if(oldToken.startsWith(tokenPrefix)){
+            String token = oldToken.substring(tokenPrefix.length());
+            return jwtTokenUtil.isTokenExpired(token) ? null : jwtTokenUtil.refreshToken(token);
+        }
+        return null;
     }
 
 //    @Override

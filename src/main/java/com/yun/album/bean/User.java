@@ -1,9 +1,11 @@
 package com.yun.album.bean;
 
+import java.io.Serializable;
+
 /**
  * 用户
  */
-public class User {
+public class User implements Serializable {
     /** 编号 */
     private long id;
     /** 帐号 */
@@ -41,6 +43,10 @@ public class User {
 
     public byte getSex() {
         return sex;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getToken() {

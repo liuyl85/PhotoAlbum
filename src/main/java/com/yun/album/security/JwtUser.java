@@ -1,17 +1,16 @@
 package com.yun.album.security;
 
+import com.yun.album.bean.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
 public class JwtUser implements UserDetails {
-    private String acc;
-    private String pwd;
+    private final User user;
 
-    public JwtUser(String acc, String pwd) {
-        this.acc = acc;
-        this.pwd = pwd;
+    public JwtUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -19,14 +18,18 @@ public class JwtUser implements UserDetails {
         return null;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public String getPassword() {
-        return pwd;
+        return user.getPwd();
     }
 
     @Override
     public String getUsername() {
-        return acc;
+        return user.getAcc();
     }
 
     @Override
