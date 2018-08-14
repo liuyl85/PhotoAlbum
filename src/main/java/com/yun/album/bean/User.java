@@ -29,6 +29,10 @@ public class User implements Serializable {
         return acc;
     }
 
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
     public String getPwd() {
         return pwd;
     }

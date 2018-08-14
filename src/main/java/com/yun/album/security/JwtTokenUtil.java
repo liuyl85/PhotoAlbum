@@ -1,30 +1,21 @@
 package com.yun.album.security;
 
+import com.yun.album.common.properties.SystemProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class JwtTokenUtil {
-    @Value("${token.valid-time-length}")
-    private long validTimeLength;
-    @Value("${token.secret}")
-    private String secret;
-
-    /**
-     * Token有效时间
-     * @return 有效时间(秒)
-     */
-    public long getValidTimeLength() {
-        return validTimeLength;
-    }
+    @Resource
+    private SystemProperties systemProperties;
 
     /**
      * 从数据声明生成令牌
@@ -32,8 +23,8 @@ public class JwtTokenUtil {
      * @return 令牌
      */
     private String generateToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + validTimeLength);
-        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
+        Date expirationDate = new Date(System.currentTimeMillis() + systemProperties.getTokenValidTimeLength() * 60 * 60 * 1000);
+        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, systemProperties.getTokenSecret()).compact();
     }
 
     /**
@@ -44,7 +35,7 @@ public class JwtTokenUtil {
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(systemProperties.getTokenSecret()).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             claims = null;
         }

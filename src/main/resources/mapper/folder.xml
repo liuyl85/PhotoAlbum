@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yun.album.dao.FolderDao">
+    <resultMap id="folder" type="com.yun.album.bean.Folder">
+        <id property="id" column="f_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="parentId" column="f_parent_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="name" column="f_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="f_update_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="f_create_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO t_folder(f_id, f_user_id, f_parent_id, f_name, f_update_time, f_create_time)
+        VALUES(#{folder.id}, #{userId}, #{folder.parentId}, #{folder.name}, #{folder.updateTime}, #{folder.createTime})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM t_folder WHERE f_id = #{id} AND f_user_id = #{userId}
+    </delete>
+
+    <update id="update">
+        UPDATE
+          t_folder
+        <set>
+            <if test="parentId != null">f_parent_id = #{parentId},</if>
+            <if test="name != null">f_name = #{name},</if>
+            <if test="updateTime != null">f_update_time = #{updateTime},</if>
+        </set>
+        WHERE f_id = #{id} AND f_user_id = #{userId}
+    </update>
+
+    <select id="selectById" resultMap="folder">
+        SELECT f_id, f_parent_id, f_name, f_update_time, f_create_time FROM t_folder WHERE f_user_id = #{userId} AND f_id = #{id}
+    </select>
+
+    <select id="selectByParentId" resultMap="folder">
+        SELECT
+            f_id, f_parent_id, f_name, f_update_time, f_create_time
+        FROM
+            t_folder
+        WHERE
+            f_user_id = #{userId} AND f_parent_id = #{parentId} AND f_id != #{parentId}
+        ORDER BY
+            f_create_time DESC
+    </select>
+
+    <select id="selectByUserId" resultMap="folder">
+        SELECT f_id, f_parent_id, f_name, f_update_time, f_create_time FROM t_folder WHERE f_user_id = #{userId} ORDER BY f_create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yun.album.dao.PhotoDao">
+    <resultMap id="PhotoInfo" type="com.yun.album.bean.PhotoInfo">
+        <id property="id" column="f_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="userId" column="f_user_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="folderId" column="f_folder_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="title" column="f_title" javaType="String" jdbcType="VARCHAR"/>
+        <result property="width" column="f_width" javaType="int" jdbcType="INTEGER"/>
+        <result property="height" column="f_height" javaType="int" jdbcType="INTEGER"/>
+        <result property="longitude" column="f_longitude" javaType="String" jdbcType="VARCHAR"/>
+        <result property="latitude" column="f_latitude" javaType="String" jdbcType="VARCHAR"/>
+        <result property="shootTime" column="f_shoot_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+        <result property="size" column="f_size" javaType="long" jdbcType="BIGINT"/>
+        <result property="path" column="f_path" javaType="String" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="f_update_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+        <result property="uploadTime" column="f_upload_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="Photo" type="com.yun.album.bean.Photo">
+        <id property="id" column="f_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="title" column="f_title" javaType="String" jdbcType="VARCHAR"/>
+        <result property="width" column="f_width" javaType="int" jdbcType="INTEGER"/>
+        <result property="height" column="f_height" javaType="int" jdbcType="INTEGER"/>
+        <result property="size" column="f_size" javaType="long" jdbcType="BIGINT"/>
+        <result property="path" column="f_path" javaType="String" jdbcType="VARCHAR"/>
+        <result property="uploadTime" column="f_upload_time" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insertFolder">
+        INSERT INTO t_photo (
+            f_id,
+            f_user_id,
+            f_folder_id,
+            f_title,
+            f_width,
+            f_height,
+            f_size,
+            f_path,
+            f_update_time,
+            f_upload_time
+        )
+        VALUES
+            (
+                #{folder.id},
+                #{userId},
+                #{folder.parentId},
+                #{folder.name},
+                0,
+                0,
+                0,
+                '',
+                #{folder.updateTime},
+                #{folder.createTime}
+            )
+    </insert>
+
+    <insert id="insertPhoto">
+        INSERT INTO t_photo (
+            f_id,
+            f_user_id,
+            f_folder_id,
+            f_title,
+            f_width,
+            f_height,
+            f_longitude,
+            f_latitude,
+            f_shoot_time,
+            f_size,
+            f_path,
+            f_update_time,
+            f_upload_time
+        )
+        VALUES
+            (
+                #{photo.id},
+                #{userId},
+                #{photo.folderId},
+                #{photo.title},
+                #{photo.width},
+                #{photo.height},
+                #{photo.longitude},
+                #{photo.latitude},
+                #{photo.shootTime},
+                #{photo.size},
+                #{photo.path},
+                #{photo.updateTime},
+                #{photo.uploadTime}
+            )
+    </insert>
+
+    <delete id="deleteFolder">
+        DELETE FROM t_photo WHERE f_id = #{id} AND f_user_id = #{userId} AND f_size = 0
+    </delete>
+
+    <delete id="deletePhoto">
+        DELETE FROM t_photo WHERE f_id = #{id} AND f_user_id = #{userId} AND f_size > 0
+    </delete>
+
+    <update id="updateFile">
+        UPDATE
+            t_photo
+        SET
+            <if test="parentId != null">f_folder_id = #{parentId},</if>
+            <if test="name != null">f_title = #{name},</if>
+            f_update_time = #{updateTime}
+        WHERE f_id = #{id} AND f_user_id = #{userId}
+    </update>
+
+    <select id="selectFolderExist" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            t_photo
+        WHERE
+            f_id = #{id} AND f_user_id = #{userId} AND f_size = 0
+    </select>
+
+    <select id="selectPhotoById" resultMap="Photo">
+        SELECT
+            f_id,
+            f_title,
+            f_width,
+            f_height,
+            f_size,
+            f_path,
+            f_update_time
+        FROM
+            t_photo
+        WHERE
+            f_id = #{id} AND f_user_id = #{userId}
+    </select>
+
+    <select id="selectFileByParentId" resultMap="Photo">
+      SELECT
+          f_id, f_title, f_width, f_height, f_size, f_path, f_upload_time
+      FROM
+          t_photo
+      WHERE
+          f_user_id = #{userId} AND f_folder_id = #{parentId} AND f_id != #{parentId}
+    </select>
+
+    <select id="selectChildExist" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            t_photo
+        WHERE
+            f_user_id = #{userId} AND f_folder_id = #{parentId} AND f_id = #{childId}
+    </select>
+
+    <select id="selectChildNumber" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            t_photo
+        WHERE
+            f_user_id = #{userId} AND f_folder_id = #{parentId} AND f_id != #{parentId}
+    </select>
+</mapper>

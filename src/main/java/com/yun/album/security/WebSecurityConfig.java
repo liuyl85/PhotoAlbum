@@ -56,17 +56,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 
         String[] postUrl = new String[]{
-                "/album/login",
-                "/album/register",
-                "/album/reset_pwd"
+                "/login",
+                "/register",
+                "/reset_pwd"
         };
 
-//        String[] getUrl = new String[]{
-//        };
+        String[] getUrl = new String[]{
+                "/photo/icon"
+        };
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, postUrl).permitAll()
-//                .antMatchers(HttpMethod.GET, getUrl).permitAll()
+                .antMatchers(HttpMethod.GET, getUrl).permitAll()
                 .anyRequest().authenticated()
                 .and();
 

@@ -9,12 +9,14 @@ import org.springframework.util.DigestUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class Tools {
 	/** 时间格式化(yyyy-MM-dd HH:mm:ss) */
@@ -27,8 +29,7 @@ public class Tools {
 	 */
 	public static String md5Digest(String str) throws MD5DigestException {
 		try {
-			String msg = DigestUtils.md5DigestAsHex(str.getBytes("utf-8"));
-			return msg;
+			return DigestUtils.md5DigestAsHex(str.getBytes("utf-8"));
 		} catch (Exception e) {
 			throw new MD5DigestException(e);
 		}
@@ -41,8 +42,7 @@ public class Tools {
 	 */
 	public static String md5Digest(File file) throws MD5DigestException {
 		try (FileInputStream in = new FileInputStream(file)) {
-			String md5 = DigestUtils.md5DigestAsHex(in);
-			return md5;
+			return DigestUtils.md5DigestAsHex(in);
 		} catch (Exception e) {
 			throw new MD5DigestException(e);
 		}
@@ -58,6 +58,15 @@ public class Tools {
 	}
 
 	/**
+	 * 时间字符串转化为时间对象
+	 * @param time 时间字符串(格式：yyyy-MM-dd HH:mm:ss)
+	 * @return 时间对象
+	 */
+	public static LocalDateTime parseStringToDateTime(String time) {
+		return LocalDateTime.parse(time, formatter);
+	}
+
+	/**
 	 * 将对象转成Json格式的字符串
 	 * @param obj 对象
 	 * @return Json格式的字符串
@@ -65,8 +74,7 @@ public class Tools {
 	 */
 	public static String toJsonString(Object obj) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		String json = mapper.writeValueAsString(obj);
-		return json;
+		return mapper.writeValueAsString(obj);
 	}
 
 	/**
@@ -78,8 +86,7 @@ public class Tools {
 	public static Map<String, Object> stringToJson(String jsonString) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		JavaType javaType = mapper.getTypeFactory().constructParametricType(HashMap.class, String.class, Object.class);
-		HashMap<String, Object> map = mapper.readValue(jsonString, javaType);
-		return map;
+		return mapper.readValue(jsonString, javaType);
 	}
 
 	/**
@@ -91,6 +98,27 @@ public class Tools {
 	public static <T> T stringToObject(String jsonString, Class<T> clazz) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(jsonString, clazz);
+	}
+
+	/**
+	 * 产生一个随机数字符串
+	 * @param numberSize 随机数长度
+	 * @return 随机数字符串
+	 */
+	public static String getRandomNum(int numberSize) {
+		StringBuilder temp = new StringBuilder();
+		for(int i=numberSize; i>0; --i){
+			temp.append((int)(Math.random() * 10));
+		}
+		return temp.toString();
+	}
+
+	/**
+	 * 获取UUID
+	 * @return UUID字符串
+	 */
+	public static String getUUID() {
+		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 	
 }

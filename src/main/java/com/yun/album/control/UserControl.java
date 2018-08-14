@@ -1,6 +1,8 @@
 package com.yun.album.control;
 
 import com.yun.album.bean.ResultData;
+import com.yun.album.bean.User;
+import com.yun.album.common.Constant;
 import com.yun.album.common.StatusCode;
 import com.yun.album.service.IUserService;
 import com.yun.album.vo.UserEditVo;
@@ -12,9 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/album")
 public class UserControl {
     private final Logger logger = LoggerFactory.getLogger(UserControl.class);
     @Resource
@@ -35,10 +38,11 @@ public class UserControl {
         }
     }
 
-    @PostMapping(value = "/reset_pwd")
-    public ResultData resetPwd(@RequestParam("pwd") String pwd) {
+    @PostMapping(value = "/reset_pwd", params = {"phone", "pwd", "code"})
+    public ResultData resetPwd(String phone, String pwd, String code) {
         try {
-            return null;
+            int result = userService.resetPassword(phone, pwd, code);
+            return new ResultData(result);
         } catch (Exception e) {
             logger.error("reset user password error.", e);
             return new ResultData(StatusCode.ERROR);
@@ -53,15 +57,19 @@ public class UserControl {
                 return new ResultData((int)result);
             }
 
-            return new ResultData(StatusCode.SUCCESS, result);
+            User user = (User)result;
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", user.getName());
+            map.put("token", user.getToken());
+            return new ResultData(StatusCode.SUCCESS, map);
         } catch (Exception e) {
             logger.error("user login error.", e);
             return new ResultData(StatusCode.ERROR);
         }
     }
 
-    @GetMapping(value = "/refreshToken")
-    public ResultData refreshToken(@RequestHeader String authorization) {
+    @GetMapping(value = "/user/refreshToken")
+    public ResultData refreshToken(@RequestHeader(Constant.TOKEN_HEADER_NAME) String authorization) {
         try {
             Object result = userService.refreshToken(authorization);
             if(result == null){
@@ -75,8 +83,12 @@ public class UserControl {
     }
 
     @PostMapping(value = "/user/edit")
-    public ResultData editUser(@Valid UserEditVo vo) {
+    public ResultData editUser(@Valid UserEditVo vo, BindingResult result) {
         try {
+            if(result.hasErrors()){
+                return new ResultData(StatusCode.ERROR);
+            }
+
             return null;
         } catch (Exception e) {
             logger.error("user edit message error.", e);
@@ -84,8 +96,8 @@ public class UserControl {
         }
     }
 
-    @PostMapping(value = "/user/set_phone")
-    public ResultData editPhone(@RequestParam String phone) {
+    @PostMapping(value = "/user/set_phone", params = {"phone"})
+    public ResultData editPhone(String phone) {
         try {
             return null;
         } catch (Exception e) {
@@ -95,9 +107,10 @@ public class UserControl {
     }
 
     @PostMapping(value = "/user/set_pwd", params = {"oldPwd", "newPwd"})
-    public ResultData editPwd(String oldPwd, String newPwd) {
+    public ResultData editPwd(@RequestAttribute(Constant.REQUEST_ATTRIBUTE_NAME_USER) User user, String oldPwd, String newPwd) {
         try {
-            return null;
+            int result = userService.editPassword(user, oldPwd, newPwd);
+            return new ResultData(result);
         } catch (Exception e) {
             logger.error("user set password error.", e);
             return new ResultData(StatusCode.ERROR);

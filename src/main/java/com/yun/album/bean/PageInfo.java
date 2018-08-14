@@ -31,7 +31,7 @@ public class PageInfo<T> {
 		this.pages = page.getPages();
 	}
     
-    public PageInfo(Page<?> page, List<T> list) {
+    public PageInfo(Page<T> page, List<T> list) {
     	this.list = new ArrayList<>(list);
 		this.total = page.getTotal();
 		this.pageNum = page.getPageNum();

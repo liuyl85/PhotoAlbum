@@ -12,3 +12,22 @@ WITH recursive child_node (`f_id`, `f_parent_id`) AS
 	ON p.`f_parent_id` = child_node.`f_id`
 )
 SELECT * FROM child_node;
+
+
+WITH recursive child_node (f_id, f_parent_id) AS
+(
+	SELECT
+	  f_id, f_parent_id
+	FROM
+	  t_folder
+	WHERE
+	  f_id = 1136298484735942657
+	UNION ALL
+	SELECT
+	  p.f_id, p.f_parent_id
+	FROM
+	  t_folder p
+	  INNER JOIN child_node ON p.f_id = child_node.f_parent_id
+	WHERE p.f_id != p.f_parent_id
+)
+SELECT COUNT(1) FROM child_node WHERE f_parent_id = 1136298488804417537;

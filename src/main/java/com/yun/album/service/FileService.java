@@ -1,13 +1,13 @@
 package com.yun.album.service;
 
+import com.yun.album.bean.FileInfo;
+import com.yun.album.bean.Folder;
 import com.yun.album.bean.PageInfo;
-import com.yun.album.bean.Photo;
-import com.yun.album.bean.PhotoInfo;
 
 /**
- * 图片操作接口
+ * 文件操作接口
  */
-public interface PhotoService {
+public interface FileService {
 
     /**
      * 创建文件夹
@@ -19,14 +19,13 @@ public interface PhotoService {
     boolean createFolder(long userId, long parentId, String folderName);
 
     /**
-     * 添加图片
+     * 添加文件
      * @param userId 用户编号
      * @param folderId 文件夹编号
-     * @param photoName 图片名称
-     * @param photoPath 图片文件路径
+     * @param file 文件对象
      * @return 操作结果
      */
-    boolean addPhotoInfo(long userId, long folderId, String photoName, String photoPath);
+    boolean addFileInfo(long userId, long folderId, FileInfo file);
 
     /**
      * 重命名文件
@@ -63,12 +62,20 @@ public interface PhotoService {
     boolean deleteFile(long userId, long... fileIds);
 
     /**
-     * 获取图片
+     * 获取文件夹
      * @param userId 用户编号
-     * @param photoId 图片编号
+     * @param folderId 文件夹编号
      * @return 结果
      */
-    Photo getPhotoById(long userId, long photoId);
+    Folder getFolderById(long userId, long folderId);
+
+    /**
+     * 获取文件
+     * @param userId 用户编号
+     * @param fileId 文件编号
+     * @return 结果
+     */
+    FileInfo getFileById(long userId, long fileId);
 
     /**
      * 获取文件夹下文件分页
@@ -78,6 +85,6 @@ public interface PhotoService {
      * @param pageSize 页大小
      * @return 分页对象
      */
-    PageInfo<PhotoInfo> getFileByParentId(long userId, long folderId, int pageNum, int pageSize);
+    PageInfo<FileInfo> getFileByParentId(long userId, long folderId, int pageNum, int pageSize);
 
 }

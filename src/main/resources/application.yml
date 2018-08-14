@@ -1,5 +1,4 @@
 server:
-  id: 1
   port: 9999
   undertow:
       accesslog:
@@ -47,12 +46,14 @@ mybatis:
 
 system:
   config:
-    upload-file-path: D:/upload
-    photo-file-path: photo
-    other-file-path: other
+    server-id: 1
+    upload-file-path: D:/upload/other
+    upload-photo-path: D:/upload/photo
+    upload-buffer-size: 1024
+    download-file-path: /file/download
+    download-photo-path: /photo/download
+    validate-cd-time-length: 60
+    validate-time-length: 180
+    token-secret: my_token
+    token-valid-time-length: 3
 
-token:
-  secret: my_token
-  header-name: Authorization
-  prefix: bearer
-  valid-time-length: 86400000

@@ -62,7 +62,7 @@ public class RedisUtils {
      * @return 值
      */
     public <T> T get(String key){
-        return (T)valueOperations.get(key);
+        return (T) valueOperations.get(key);
     }
 
     /**
