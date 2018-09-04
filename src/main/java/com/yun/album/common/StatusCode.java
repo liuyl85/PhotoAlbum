@@ -9,8 +9,8 @@ public class StatusCode {
 
     /** 系统错误 */
     public static final int ERROR = 101;
-    /** 用户已存在 */
-    public static final int USER_ALREADY_EXISTED = 102;
+    /** 账号已存在 */
+    public static final int ACC_ALREADY_EXISTED = 102;
     /** MD5加密失败 */
     public static final int MD5_DIGEST_FAILED = 103;
     /** 用户名或密码错误 */

@@ -90,8 +90,8 @@ public class UserServiceImpl implements IUserService {
             return StatusCode.MD5_DIGEST_FAILED;
         }
 
-        userDao.insert(user);
-        return StatusCode.SUCCESS;
+        int insertNum = userDao.insert(user);
+        return insertNum == 1 ? StatusCode.SUCCESS : StatusCode.ACC_ALREADY_EXISTED;
     }
 
     @Override

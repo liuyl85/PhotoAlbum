@@ -17,15 +17,15 @@
     </resultMap>
 
     <insert id="insert" parameterType="com.yun.album.bean.User">
-        insert into t_user(f_id, f_acc, f_pwd) VALUES(#{id}, #{acc}, #{pwd})
+        INSERT IGNORE INTO t_user(f_id, f_acc, f_pwd) VALUES(#{id}, #{acc}, #{pwd})
     </insert>
 
     <select id="selectByAcc" resultMap="user">
-        select f_id, f_acc, f_pwd from t_user where f_acc = #{acc}
+        SELECT f_id, f_acc, f_pwd FROM t_user WHERE f_acc = #{acc}
     </select>
 
     <select id="selectAccByPhone" resultMap="userAccount">
-        select f_id, f_acc from t_user where f_phone = #{phone}
+        SELECT f_id, f_acc FROM t_user WHERE f_phone = #{phone}
     </select>
 
     <update id="updateById">

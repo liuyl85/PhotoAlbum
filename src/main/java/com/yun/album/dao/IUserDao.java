@@ -16,7 +16,7 @@ public interface IUserDao {
      * 添加用户
      * @param user 用户对象
      */
-    void insert(UserEntity user);
+    int insert(UserEntity user);
 
     /**
      * 根据帐号查询用户对象

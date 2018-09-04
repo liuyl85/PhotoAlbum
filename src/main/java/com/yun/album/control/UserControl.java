@@ -52,6 +52,14 @@ public class UserControl {
     @PostMapping(value = "/login", params = {"acc", "pwd"})
     public ResultData login(String acc, String pwd) {
         try {
+            if(acc.length() < 6 || acc.length() > 18){
+                return new ResultData(StatusCode.ACC_OR_PWD_ERROR);
+            }
+
+//            if(pwd.length() != 32){
+//                return new ResultData(StatusCode.ACC_OR_PWD_ERROR);
+//            }
+
             Object result = userService.login(acc, pwd);
             if(result instanceof Integer){
                 return new ResultData((int)result);
